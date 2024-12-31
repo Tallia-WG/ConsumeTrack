@@ -2,7 +2,7 @@ Built for tracking consumable usage in Season of Discovery raids. Currently Logs
 
 Automatically tracks on Encounter start.
 
--- Will track encounters in MC, BWL, AQ40, 
+-- Will track encounters in MC, BWL, AQ40, Naxxramas
 
 /ct clear - Clears all tracked data. 
 /ct check - Manual TimeStamped Consumable check. 
