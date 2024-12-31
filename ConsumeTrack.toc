@@ -1,0 +1,8 @@
+## Interface: 11500
+## Title: ConsumeTrack
+## Notes: Tracks consumables on Raid Encounters
+## Author: Tallia - Wild Growth US
+## Version: 1.0
+## SavedVariables: ConsumeTrackDB
+
+ConsumeTrack.lua
