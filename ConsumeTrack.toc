@@ -4,5 +4,6 @@
 ## Author: Tallia - Wild Growth US
 ## Version: 1.0
 ## SavedVariables: ConsumeTrackDB
+## Wago: bGoMnY60
 
 ConsumeTrack.lua
