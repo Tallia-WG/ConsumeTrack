@@ -63,7 +63,6 @@ ConsumeTrackerDB = ConsumeTrackerDB or {
 	[30003] = "Sheen of Zanza",
 	[24383] = "Swiftness of Zanza",
 	[24382] = "Spirit of Zanza",
-	
         -- Add more consumables as needed
     }
 }
