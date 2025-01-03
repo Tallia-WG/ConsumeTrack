@@ -55,6 +55,7 @@ ConsumeTrackerDB = ConsumeTrackerDB or {
 	[15851] = "Dragonbreath Chili",
 	[22730] = "Run Tum Tuber Surprise",
 	[470361] = "Darkclaw Bisque",
+	[19710] = "12 Sta/Spi Food",
 	[10667] = "ROIDS",
 	[10668] = "Lung Juice",
 	[10669] = "Scorpid Assay",
