@@ -69,6 +69,9 @@ ConsumeTrackerDB = ConsumeTrackerDB or {
 	[30003] = "Sheen of Zanza",
 	[24383] = "Swiftness of Zanza",
 	[24382] = "Spirit of Zanza",
+	[1223348] = "Seal of the Dawn - DPS - Rank 2",
+	[1223367] = "Seal of the Dawn - Tank - Rank 2",
+	[1223379] = "Seal of the Dawn - Healer - Rank 2",
         -- Add more consumables as needed
     }
 }
