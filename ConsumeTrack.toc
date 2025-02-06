@@ -1,4 +1,4 @@
-## Interface: 11505
+## Interface: 11506
 ## Title: ConsumeTrack
 ## Notes: Tracks consumables on Raid Encounters
 ## Version: 1.0
