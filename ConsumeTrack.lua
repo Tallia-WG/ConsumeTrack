@@ -246,7 +246,7 @@ SlashCmdList["ConsumeTRACKER"] = function(msg)
         	for i = 1, numMembers do
             	local unit = isInRaid and "raid"..i or "party"..i
             	local playerName = UnitName(unit)
-            	local className, _ = UnitClass("player")
+            	local className, _ = UnitClass(unit)
             	if playerName then
                 	currentCheck.players[playerName] = {
                 	class = className,
