@@ -96,9 +96,9 @@ ConsumeTrackerDB = ConsumeTrackerDB or {
 	[1223355] = "Seal of the Dawn - DPS - Rank 9",
 	[1223375] = "Seal of the Dawn - Tank - Rank 9",
 	[1223386] = "Seal of the Dawn - Healer - Rank 9",
-	[1223357] = "Seal of the Dawn - DPS - Rank 9",
-	[1223376] = "Seal of the Dawn - Tank - Rank 9",
-	[1223387] = "Seal of the Dawn - Healer - Rank 9",
+	[1223357] = "Seal of the Dawn - DPS - Rank 10",
+	[1223376] = "Seal of the Dawn - Tank - Rank 10",
+	[1223387] = "Seal of the Dawn - Healer - Rank 10",
         -- Add more consumables as needed
     }
 }
