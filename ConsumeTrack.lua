@@ -75,6 +75,30 @@ ConsumeTrackerDB = ConsumeTrackerDB or {
 	[1223348] = "Seal of the Dawn - DPS - Rank 2",
 	[1223367] = "Seal of the Dawn - Tank - Rank 2",
 	[1223379] = "Seal of the Dawn - Healer - Rank 2",
+	[1223349] = "Seal of the Dawn - DPS - Rank 3",
+	[1223368] = "Seal of the Dawn - Tank - Rank 3",
+	[1223380] = "Seal of the Dawn - Healer - Rank 3",
+	[1223350] = "Seal of the Dawn - DPS - Rank 4",
+	[1223370] = "Seal of the Dawn - Tank - Rank 4",
+	[1223381] = "Seal of the Dawn - Healer - Rank 4",
+	[1223351] = "Seal of the Dawn - DPS - Rank 5",
+	[1223371] = "Seal of the Dawn - Tank - Rank 5",
+	[1223382] = "Seal of the Dawn - Healer - Rank 5",
+	[1223352] = "Seal of the Dawn - DPS - Rank 6",
+	[1223391] = "Seal of the Dawn - Tank - Rank 6",
+	[1223383] = "Seal of the Dawn - Healer - Rank 6",
+	[1223353] = "Seal of the Dawn - DPS - Rank 7",
+	[1223373] = "Seal of the Dawn - Tank - Rank 7",
+	[1223384] = "Seal of the Dawn - Healer - Rank 7",
+	[1223353] = "Seal of the Dawn - DPS - Rank 8",
+	[1223374] = "Seal of the Dawn - Tank - Rank 8",
+	[1223385] = "Seal of the Dawn - Healer - Rank 8",
+	[1223355] = "Seal of the Dawn - DPS - Rank 9",
+	[1223375] = "Seal of the Dawn - Tank - Rank 9",
+	[1223386] = "Seal of the Dawn - Healer - Rank 9",
+	[1223357] = "Seal of the Dawn - DPS - Rank 9",
+	[1223376] = "Seal of the Dawn - Tank - Rank 9",
+	[1223387] = "Seal of the Dawn - Healer - Rank 9",
         -- Add more consumables as needed
     }
 }
@@ -135,7 +159,7 @@ function BT:OnEvent(event, ...)
 			--print("|cff17FDFDConsumeTracker: Logging Raid Consumables!|r")
 			if GetNumGroupMembers() > 0 then
 				currentCheck = {
-					timestamp = encounterName, 
+					timestamp = encounterName .. " - " .. currentTime, 
 					players = {}
 				}
 				local isInRaid = IsInRaid()
