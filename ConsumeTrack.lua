@@ -153,6 +153,7 @@ function BT:OnEvent(event, ...)
     if event == "ENCOUNTER_START" then
 		local encounterID, encounterName = ...
 		local _, _, _, _, _, _, _, zone, _ = GetInstanceInfo()
+		local currentTime = date("%m/%d/%y %H:%M:%S", time())
 		--print("|cff17FDFDEncounter started: " .. encounterName .. " (ID: " .. encounterID .. ")|r")
 		activeEncounter = encounterID   
 		if ConsumeTrackerDB.zones[zone] then
