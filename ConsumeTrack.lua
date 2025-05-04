@@ -3,7 +3,7 @@ local BT = CreateFrame("Frame")
 _G[addonName] = addon
 
 -- Initialize addon database
-ConsumeTrackerDB = ConsumeTrackerDB or {
+ConsumeTrackDB = ConsumeTrackDB or {
     records = {}, -- New structure organized by raid instance and date
     checks = {}, -- Keeping legacy data structure for backward compatibility
     
@@ -125,7 +125,7 @@ local function GetConsumableConsumes(unit)
     	local auraData = C_UnitAuras.GetAuraDataByIndex(unit, i, "HELPFUL")
     	if not auraData then break end
     	local spellId = auraData.spellId
-    	if ConsumeTrackerDB.consumables[spellId] then
+    	if ConsumeTrackDB.consumables[spellId] then
         	consumes[spellId] = {
            	name = auraData.name,
             	remaining = auraData.expirationTime - GetTime(),
@@ -165,18 +165,18 @@ function BT:OnEvent(event, ...)
 		local _, _, _, _, _, _, _, zoneID, _ = GetInstanceInfo()
 		local currentTime = date("%H:%M:%S", time())
 		local currentDate = date("%m/%d/%y", time())
-		local zoneName = ConsumeTrackerDB.zones[zoneID] or "Unknown Zone"
+		local zoneName = ConsumeTrackDB.zones[zoneID] or "Unknown Zone"
 		
 		--print("|cff17FDFDEncounter started: " .. encounterName .. " (ID: " .. encounterID .. ")|r")
 		activeEncounter = encounterID   
 		
-		if ConsumeTrackerDB.zones[zoneID] then
+		if ConsumeTrackDB.zones[zoneID] then
 			--print("|cff17FDFDConsumeTracker: Logging Raid Consumables!|r")
 			
 			-- Ensure zone exists in records
-			ConsumeTrackerDB.records[zoneName] = ConsumeTrackerDB.records[zoneName] or {}
+			ConsumeTrackDB.records[zoneName] = ConsumeTrackDB.records[zoneName] or {}
 			-- Ensure date exists for this zone
-			ConsumeTrackerDB.records[zoneName][currentDate] = ConsumeTrackerDB.records[zoneName][currentDate] or {
+			ConsumeTrackDB.records[zoneName][currentDate] = ConsumeTrackDB.records[zoneName][currentDate] or {
 				encounters = {}
 			}
 			
@@ -214,14 +214,14 @@ function BT:OnEvent(event, ...)
 			end
 			
 			-- Add to both data structures
-			table.insert(ConsumeTrackerDB.records[zoneName][currentDate].encounters, currentCheck)
+			table.insert(ConsumeTrackDB.records[zoneName][currentDate].encounters, currentCheck)
 			
 			-- For backward compatibility
 			local legacyCheck = {
 				timestamp = encounterName .. " - " .. currentDate .. " " .. currentTime,
 				players = currentCheck.players
 			}
-			table.insert(ConsumeTrackerDB.checks, legacyCheck)
+			table.insert(ConsumeTrackDB.checks, legacyCheck)
 			
 			currentCheck = nil
 		end
@@ -237,10 +237,10 @@ SLASH_ConsumeTRACKER1 = "/ct"
 SLASH_ConsumeTRACKER2 = "/consumetracker"
 
 local function ExportToCSV(filterZone, filterDate)
-    local csv = "Date,Zone,Encounter,Time,Player,Class,Consumable,\n"
+    local csv = "Boss,Player,Class,Consumable,\n"
     
-    -- Use the new structured format
-    for zoneName, zoneDates in pairs(ConsumeTrackerDB.records) do
+    -- Use the new structured format but export in the simple format
+    for zoneName, zoneDates in pairs(ConsumeTrackDB.records) do
         -- Skip if we're filtering by zone and this isn't the zone we want
         if filterZone and filterZone ~= zoneName then
             -- Skip this zone
@@ -251,26 +251,26 @@ local function ExportToCSV(filterZone, filterDate)
                     -- Skip this date
                 else
                     for _, encounter in ipairs(dateData.encounters) do
+                        -- Format boss name as "Encounter (Zone)"
+                        local bossName = encounter.name
+                        if encounter.name ~= "Manual Check" then
+                            bossName = encounter.name .. " (" .. zoneName .. ")"
+                        end
+                        
                         for playerName, data in pairs(encounter.players) do
                             if data.consumes and next(data.consumes) then
                                 for spellId, consume in pairs(data.consumes) do
-                                    csv = csv .. string.format("%s,%s,%s,%s,%s,%s,%s,\n",
-                                        dateStr,
-                                        zoneName,
-                                        encounter.name,
-                                        encounter.timestamp,
+                                    csv = csv .. string.format("%s,%s,%s,%s,\n",
+                                        bossName,
                                         playerName,
                                         data.class,
-                                        ConsumeTrackerDB.consumables[spellId]
+                                        ConsumeTrackDB.consumables[spellId]
                                     )
                                 end
                             else
                                 -- Player has no tracked consumables
-                                csv = csv .. string.format("%s,%s,%s,%s,%s,%s,None,\n",
-                                    dateStr,
-                                    zoneName,
-                                    encounter.name,
-                                    encounter.timestamp,
+                                csv = csv .. string.format("%s,%s,%s,None,\n",
+                                    bossName,
                                     playerName,
                                     data.class
                                 )
@@ -283,14 +283,9 @@ local function ExportToCSV(filterZone, filterDate)
     end
     
     -- If there's no data in the new structure but there is in the old one, 
-    -- and we're not filtering (default export), fall back to legacy format
-    if csv == "Date,Zone,Encounter,Time,Player,Class,Consumable,\n" and 
-       #ConsumeTrackerDB.checks > 0 and
-       not filterZone and not filterDate then
-        
-        csv = "Boss,Player,Class,Consumable,\n"
-        
-        for _, check in ipairs(ConsumeTrackerDB.checks) do
+    -- use the legacy data
+    if csv == "Boss,Player,Class,Consumable,\n" and #ConsumeTrackDB.checks > 0 then
+        for _, check in ipairs(ConsumeTrackDB.checks) do
             for playerName, data in pairs(check.players) do
                 if data.consumes and next(data.consumes) then
                     for spellId, consume in pairs(data.consumes) do
@@ -298,12 +293,12 @@ local function ExportToCSV(filterZone, filterDate)
                             check.timestamp,
                             playerName,
                             data.class,
-                            ConsumeTrackerDB.consumables[spellId]
+                            ConsumeTrackDB.consumables[spellId]
                         )
                     end
                 else
                     -- Player has no tracked consumables
-                    csv = csv .. string.format("%s,%s,%s,None\n",
+                    csv = csv .. string.format("%s,%s,%s,None,\n",
                         check.timestamp,
                         playerName,
                         data.class
@@ -321,7 +316,7 @@ local function GetSortedRecords()
     local recordList = {}
     
     -- Collect all zone-date combinations
-    for zoneName, zoneDates in pairs(ConsumeTrackerDB.records) do
+    for zoneName, zoneDates in pairs(ConsumeTrackDB.records) do
         for dateStr, dateData in pairs(zoneDates) do
             local encounterCount = #dateData.encounters
             table.insert(recordList, {
@@ -456,12 +451,12 @@ SlashCmdList["ConsumeTRACKER"] = function(msg)
 		local currentTime = date("%H:%M:%S", time())
 		local currentDate = date("%m/%d/%y", time())
 		local _, _, _, _, _, _, _, zoneID, _ = GetInstanceInfo()
-		local zoneName = ConsumeTrackerDB.zones[zoneID] or "Manual Check"
+		local zoneName = ConsumeTrackDB.zones[zoneID] or "Manual Check"
 		
 		-- Ensure zone exists in records
-		ConsumeTrackerDB.records[zoneName] = ConsumeTrackerDB.records[zoneName] or {}
+		ConsumeTrackDB.records[zoneName] = ConsumeTrackDB.records[zoneName] or {}
 		-- Ensure date exists for this zone
-		ConsumeTrackerDB.records[zoneName][currentDate] = ConsumeTrackerDB.records[zoneName][currentDate] or {
+		ConsumeTrackDB.records[zoneName][currentDate] = ConsumeTrackDB.records[zoneName][currentDate] or {
 			encounters = {}
 		}
 		
@@ -503,22 +498,22 @@ SlashCmdList["ConsumeTRACKER"] = function(msg)
 		end
 		
 		-- Add to both data structures
-		table.insert(ConsumeTrackerDB.records[zoneName][currentDate].encounters, currentCheck)
+		table.insert(ConsumeTrackDB.records[zoneName][currentDate].encounters, currentCheck)
 		
 		-- For backward compatibility
 		local legacyCheck = {
 			timestamp = "Manual Check - " .. currentDate .. " " .. currentTime,
 			players = currentCheck.players
 		}
-		table.insert(ConsumeTrackerDB.checks, legacyCheck)
+		table.insert(ConsumeTrackDB.checks, legacyCheck)
 		
 		currentCheck = nil
 		print("ConsumeTracker: Manual check recorded")
     elseif command == "clear" then
         if args[2] == "zone" and args[3] then
             local zoneToDelete = args[3]
-            if ConsumeTrackerDB.records[zoneToDelete] then
-                ConsumeTrackerDB.records[zoneToDelete] = nil
+            if ConsumeTrackDB.records[zoneToDelete] then
+                ConsumeTrackDB.records[zoneToDelete] = nil
                 print("ConsumeTracker: Data for " .. zoneToDelete .. " cleared")
             else
                 print("ConsumeTracker: Zone " .. zoneToDelete .. " not found")
@@ -526,7 +521,7 @@ SlashCmdList["ConsumeTRACKER"] = function(msg)
         elseif args[2] == "date" and args[3] then
             local dateToDelete = args[3]
             local found = false
-            for zoneName, zoneDates in pairs(ConsumeTrackerDB.records) do
+            for zoneName, zoneDates in pairs(ConsumeTrackDB.records) do
                 if zoneDates[dateToDelete] then
                     zoneDates[dateToDelete] = nil
                     found = true
@@ -538,8 +533,8 @@ SlashCmdList["ConsumeTRACKER"] = function(msg)
                 print("ConsumeTracker: Date " .. dateToDelete .. " not found")
             end
         else
-            ConsumeTrackerDB.checks = {}
-            ConsumeTrackerDB.records = {}
+            ConsumeTrackDB.checks = {}
+            ConsumeTrackDB.records = {}
             print("ConsumeTracker: All data cleared")
         end
     elseif command == "list" then
