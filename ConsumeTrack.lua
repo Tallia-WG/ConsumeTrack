@@ -254,7 +254,7 @@ local function ExportToCSV(filterZone, filterDate)
                         -- Format boss name as "Encounter (Zone)"
                         local bossName = encounter.name
                         if encounter.name ~= "Manual Check" then
-                            bossName = encounter.name .. " (" .. zoneName .. ")"
+                            bossName = encounter.name .. " (" .. zoneName .. ")" .. " - " .. encounter.timestamp
                         end
                         
                         for playerName, data in pairs(encounter.players) do
